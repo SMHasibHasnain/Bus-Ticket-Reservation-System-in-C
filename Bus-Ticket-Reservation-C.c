@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <time.h>
 
 
 #define USER_MAX 50
@@ -127,35 +128,39 @@ struct bus {
     int ticketPrice;
     int coachId;
     int seatList[99];
+    int seatHG[99];
 };
 
 //Bus Management
 bus coach[BUS_MAX] = {
-    {"Safar", "Dhaka", "Rajshahi", "8:00am", 57, 0, 700, 1, {0}}, 
-    {"Jatra", "Dhaka", "Khulna", "9:00am", 41, 1, 1600, 2, {0}},
-    {"Zatri", "Dhaka", "Chattagram", "9:00am", 41, 1, 1800, 3, {0}},
-    {"Pother Sur","Dhaka", "Shylet", "10:00am", 41, 0, 1300, 4, {0}},
-    {"Meghdut","Dhaka", "Chapai", "10:00am", 41, 0, 1000, 5, {0}},
-    {"Pother Sathi","Dhaka", "Srimangal", "10:330am", 41, 1, 1150, 6, {0}},
-    {"POtho Bondhhu","Dhaka", "Dinajpur", "11:00am", 41, 1, 900, 7, {0}},
-    {"Mridu Goti","Dhaka", "Rajshahi", "10:30am", 41, 0, 400, 8, {0}},
-    {"Shongi","Chapai", "Dhaka", "7:00pm", 41, 1, 900, 9, {0}},
-    {"Akashpoth","Feni", "Bogura", "12:00pm", 41, 1, 700, 10, {0}},
-    {"Shopnopothe","Rajshahi", "Rangpur", "11:30am", 41, 1, 1250, 11, {0}},
-    {"Meghmala","Magura", "Naogoan", "8:00pm", 41, 0, 700, 12, {0}},
-    {"Oronnopoth","Dhaka", "Pabna", "08:30pm", 41, 0, 400, 13, {0}},
-    {"Gotidhara","Rajshahi", "Barishal", "09:00pm", 41, 1, 1400, 14, {0}},
-    {"Songjogpoth","Dhaka", "Cumilla", "09:30pm", 41, 0, 900, 15, {0}},
-    {"Choltipoth","Rajshahi", "Cox's Bazar", "10:00pm", 41, 1, 1600, 16, {0}},
-    {"Chokro","Dhaka", "Jashore", "10:00am", 41, 0, 1000, 17, {0}},
-    {"Prantore","Dhaka", "Narail", "10:20am", 41, 0, 550, 18, {0}},
-    {"Panthopothe","Dhaka", "Magura", "11:45am", 41, 0, 1100, 19, {0}},
-    {"Vromon","Bogura", "Feni", "10:00am", 41, 0, 1400, 20, {0}},
+    {"Safar", "Dhaka", "Rajshahi", "8:00am", 57, 0, 700, 1, {0}, {0}}, 
+    {"Jatra", "Dhaka", "Khulna", "9:00am", 41, 1, 1600, 2, {0}, {0}},
+    {"Zatri", "Dhaka", "Chattagram", "9:00am", 41, 1, 1800, 3, {0}, {0}},
+    {"Pother Sur","Dhaka", "Shylet", "10:00am", 41, 0, 1300, 4, {0}, {0}},
+    {"Meghdut","Dhaka", "Chapai", "10:00am", 41, 0, 1000, 5, {0},{0}},
+    {"Pother Sathi","Dhaka", "Srimangal", "10:330am", 41, 1, 1150, 6, {0}, {0}},
+    {"POtho Bondhhu","Dhaka", "Dinajpur", "11:00am", 41, 1, 900, 7, {0}, {0}},
+    {"Mridu Goti","Dhaka", "Rajshahi", "10:30am", 41, 0, 400, 8, {0}, {0}},
+    {"Shongi","Chapai", "Dhaka", "7:00pm", 41, 1, 900, 9, {0}, {0}},
+    {"Akashpoth","Feni", "Bogura", "12:00pm", 41, 1, 700, 10, {0}, {0}},
+    {"Shopnopothe","Rajshahi", "Rangpur", "11:30am", 41, 1, 1250, 11, {0}, {0}},
+    {"Meghmala","Magura", "Naogoan", "8:00pm", 41, 0, 700, 12, {0}, {0}},
+    {"Oronnopoth","Dhaka", "Pabna", "08:30pm", 41, 0, 400, 13, {0}, {0}},
+    {"Gotidhara","Rajshahi", "Barishal", "09:00pm", 41, 1, 1400, 14, {0}, {0}},
+    {"Songjogpoth","Dhaka", "Cumilla", "09:30pm", 41, 0, 900, 15, {0}, {0}},
+    {"Choltipoth","Rajshahi", "Cox's Bazar", "10:00pm", 41, 1, 1600, 16, {0}, {0}},
+    {"Chokro","Dhaka", "Jashore", "10:00am", 41, 0, 1000, 17, {0}, {0}},
+    {"Prantore","Dhaka", "Narail", "10:20am", 41, 0, 550, 18, {0}, {0}},
+    {"Panthopothe","Dhaka", "Magura", "11:45am", 41, 0, 1100, 19, {0}, {0}},
+    {"Vromon","Bogura", "Feni", "10:00am", 41, 0, 1400, 20, {0}, {0}},
 };
  
 int countCoach = 20;
 char getBusDepartFrom[20];
 char getBusDestiTo[20];
+int status; //payment clear or not
+int totalMoney = 0;
+int genderMatch;
 
 //Default Home variables
 bool lang = 0; // 0 for non english. 1 for bangla.
@@ -188,6 +193,9 @@ void busDepartFrom();
 void busDestiTo();
 void busSchedule();
 void buyTicket(int n);
+void invoice(int exactBusId, int exactSeatNum);
+void paymentGateway(int BusId, int exactSeatNum);
+void paymentMethod(int BusId, int exactSeatNum);
 int availableSeat(int s);
 void seatPlan(int n);
 void ifExit();
@@ -195,19 +203,51 @@ void forgetPassword();
 void busAnimation();
 void busLogo();
 void returnToMenu();
+void storeDefaultUserData();
+void scanUserData();
+void appendUserData();
+void UpdateStoredUserData();
+void storeDefaultBusData();
+void scanBusData();
+void appendBusData();
+void storeDefaultBusSeatData();
+void scanBusSeatData();
+void appendBusSeatData();
+void UpdateStoredBusSeatData(int exactBusId, int exactSeatNum);
+void storeDefaultBusSeatHGData();
+void scanBusSeatHGData();
+void appendBusSeatHGData();
+void UpdateStoredBusSeatHGData(int exactBusId, int exactSeatNum);
+void allBusSum();
+void allTicketHolder();
 const char* showGender(bool gender);
 const char* showRole(int role);
 const char* showCoachType(bool icoachType);
 const char* showSeatStatus(int iseatStatus);
+void sendMsg();
+void getMsg();
+void tempuserlist();
 
+FILE* allUserData;
+FILE* allBusData;
+FILE* msg;
+FILE* extra;
 
 int main() {
+    
+    storeDefaultUserData();
+    scanUserData();
+    storeDefaultBusData();
+    scanBusData();
+    
     if($myUserId == 0) {
         nonLogged_Menu();
     } else {
         printf("Something went wrong!\n");
         exit(0);
     }
+    
+    
 }
 
 void busAnimation() {
@@ -255,7 +295,17 @@ void busLogo() {
     printf(YEL "      =---" BHBLK "OO" YEL "---------" BHBLK "OO" YEL "---=" BHBLK "@@@\n\n" COLOR_RESET);
 }
 
+void busLogo2() {
+    //10,8,7,7 spaces
+    printf("\n\n\n\n");
+    printf(YEL "                                    _________________\n");
+    printf("                            /" BHBLK "|[][][][][][][][]" YEL " | " BHBLK "- -\n");
+    printf(YEL "                        (    " BHYEL "DURNIBAR BUS" YEL "   | " BHBLK "- -\n");
+    printf(YEL "                        =---" BHBLK "OO" YEL "---------" BHBLK "OO" YEL "---=" BHBLK "@@@\n\n" COLOR_RESET);
+}
+
 void welcomeMsg() {
+    busLogo();
     if($myUserId == 0) {
         printf(BHWHT "            Hello User!\n");
         printf("        Welcome to our system!\n" COLOR_RESET);
@@ -268,7 +318,6 @@ void welcomeMsg() {
 void nonLogged_Menu() {
     busAnimation();
     system("cls");
-    busLogo();
     welcomeMsg();
     int n;
     printf(WHTHB "\n            Main Menu             "reset);
@@ -300,7 +349,7 @@ void nonLogged_Menu() {
             ourBranches();
             break;
         case 4: 
-            contactUs();
+            tempuserlist();
             break;
         case 5: 
             userManual();
@@ -423,8 +472,10 @@ void login() {
 }
 
 void forgetPassword() {
+    busAnimation();
     system("cls");
-    printf("\n" WHTHB "            Main Menu             "reset);
+    busLogo();
+    printf(WHTHB "\n            Forget Password             "reset);
     printf("\n\n");
     char stemp;
     int itemp;
@@ -458,17 +509,18 @@ void forgetPassword() {
 
     if(verify == 3 && id[store-1].userRole == 1) {
         $myUserId = store;
-        printf("\n\nYour provided informations are correct.\n");
-        printf("\nYou are eligible for changing password.\n\n");
-        printf("\n\nWrite new password: ");
+        printf(BHGRN "\n  Your provided informations are correct. " COLOR_RESET);
+        printf(BHYEL "\n  You are eligible for changing password." COLOR_RESET);
+        printf(BHCYN "\n\n  Write new password: " COLOR_RESET);
         scanf("%c", &stemp);
         scanf("%[^\n]", id[$myUserId-1].userPass);
-        printf("Password has been changed\n");
-        printf("Please login now!\n");
+        printf(BHGRN "\n  Password has been changed." COLOR_RESET);
+        printf(BHYEL "\n  Please login now!\n\n" COLOR_RESET);
         system("pause");
         login();
     } else {
-        printf("\n\nSorry. Password can not be changed. Maybe your informations are wrong or you are trying to access admin panel in a wrong way...\n");
+        printf(BHRED "\n  Sorry. Password can not be changed." COLOR_RESET);
+        printf(BHYEL "\n  Maybe your informations are wrong or you are trying to access admin panel in a wrong way...\n\n" COLOR_RESET);
         system("pause");
         returnToMenu();
     }
@@ -514,6 +566,7 @@ void createAccount() {
 
     id[countUser-1].userRole = 1;
     id[countUser-1].userId = countUser;
+    appendUserData();
 
     printf("\n\n");
     system("pause");
@@ -544,11 +597,59 @@ void updateOwnProfile() {
     printf("Role: %s\n", showRole(id[$myUserId-1].userRole));
     printf("User ID: %d\n\n", id[$myUserId-1].userId);
 
-    printf("Want to change profile? (yes = 1, no = 0): ");
     int n;
+    int m;
+    char temp;
+    char currName[30];
+
+    printf("Want to change profile? (yes = 1, no = 0): ");
     scanf("%d", &n);
-    
-    system("pause");
+    if(n==1) {
+        do {
+            printf("Choose what you want to change (Enter 0 for exit): ");
+            scanf("%d", &m);
+            switch(m) {
+                case 1:
+                    printf("Enter new fullname: ");
+                    scanf("%c", &temp);
+                    scanf("%[^\n]", currName);
+                    strcpy(id[$myUserId-1].fullName, currName);
+                    break;
+                case 2:
+                    printf("Enter new username: ");
+                    scanf("%c", &temp);
+                    scanf("%[^\n]", currName);
+                    strcpy(id[$myUserId-1].userName, currName);
+                    break;
+                case 3:
+                    printf("Enter new password: ");
+                    scanf("%c", &temp);
+                    scanf("%[^\n]", currName);
+                    strcpy(id[$myUserId-1].userPass, currName);
+                    break;
+                case 4:
+                    printf("Enter your correct gender: ");
+                    scanf("%d", &id[$myUserId-1].userGender);
+                    break;
+                case 5:
+                    printf("Enter your new age: ");
+                    scanf("%d", &id[$myUserId-1].userAge);
+                    break;
+                case 0:
+                    printf("Your profile has been updated.\n");
+                    break;
+                default:
+                    printf("Wrong number!");
+                    break;
+            }
+        } while(m != 0);
+        UpdateStoredUserData();
+        updateOwnProfile();
+    } else if(n == 0) {
+        returnToMenu();
+    } else {
+        updateOwnProfile();
+    }
 }
 
 void logout() {
@@ -562,6 +663,7 @@ void logout() {
 void searchBus() {
     busAnimation();
     system("cls");
+    busLogo();
     printf(WHTHB BHBLK "           Bus Schedule           \n" COLOR_RESET);
     busDepartFrom();
     busDestiTo();
@@ -683,7 +785,8 @@ int availableSeat(int s) {
 void busSchedule() {
     busAnimation();
     system("cls");
-    printf("\n\n\n                                     ");
+    busLogo();
+    printf("                                     ");
     printf(WHTHB BHBLK"                 Bus Schedule                 \n" COLOR_RESET);
     printf("\n                                  ");
     printf(HBLK "[Currently this routes and buses are available only.]\n\n");
@@ -718,8 +821,8 @@ void busSchedule() {
 }
 
 void buyTicket(int n) {
-    busAnimation();
     system("cls");
+    busAnimation();
     printf(WHTHB BHBLK"                                Buy Ticket                                " COLOR_RESET);
     seatPlan(n);
 
@@ -761,69 +864,94 @@ void buyTicket(int n) {
     } 
 
     int choice;
-    int genderMatch;
+    genderMatch = 0;
     int x = 0;
+    int ifTicketForYou;
 
     do {
-        printf(BHWHT "\n\nEnter Seat number to buy a ticket " BHRED " (Put 0 to return): " COLOR_RESET );
+        printf(BHWHT "                  Buying ticket for you or someone else?\n");
+        printf(BHRED "                     ( Enter 1 for yours, 0 for others )\n" COLOR_RESET);
+        printf(BHYEL "                  Enter your choice: " COLOR_RESET);
+        scanf("%d", &ifTicketForYou);
+        if(ifTicketForYou != 0 && ifTicketForYou != 1) {
+            printf(BHRED "\n\n                  Something Went wrong. Try again.\n\n");
+            system("pause");
+            printf("\n");
+            continue;
+        }
+        printf(BHWHT "\n\n                  Enter Seat number to buy a ticket " BHRED "\n                  (Put 0 to return)\n" COLOR_RESET );
+        printf(BHYEL "                  Enter your choice: " COLOR_RESET );
         scanf("%d", &choice);
         if(choice == 0) {
             searchBus();
             return;
         }
         if(choice > coach[n-1].seatNumber || choice < 1) {
-            printf(BHRED "\n\nWrong Seat Number\n");
+            printf(BHRED "\n                  Wrong Seat Number\n");
             continue;
         }
 
         if(coach[n-1].seatList[choice-1] == 0) {
-            printf(BHWHT "\nTicket owner's gender (1 for men, 2 for women):" COLOR_RESET);
+            if(ifTicketForYou == 0) {
+                printf(BHWHT "\n                  Ticket owner's gender (1 for men, 2 for women)\n" COLOR_RESET);
+                printf(BHYEL "                  Enter your choice: " COLOR_RESET);
             scanf("%d", &genderMatch);
-        
-            if(choice == 1 || (choice-1)%4 == 0) {
-                if(coach[n-1].seatList[choice] == genderMatch || coach[n-1].seatList[choice] == 0) {
-                    coach[n-1].seatList[choice-1] = genderMatch;
-                    printf(BHGRN "\n\nHurray! Seat booking successfull!\n\n" COLOR_RESET);
-                    x = 1;
-                    system("pause");
+            } else if(ifTicketForYou == 1){
+                genderMatch = (id[$myUserId-1].userGender+1);
             } else {
-                    printf(BHRED "\nSorry! You cann't seat beside your unknown opposite gender.\n\n" COLOR_RESET);
-                    system("pause");
+                printf(BHRED "\n\n                  Something Went wrong. Try again.\n\n" COLOR_RESET);
+                system("                  pause");
+                continue;
+            }
+            if(choice == 1 || (choice-1)%4 == 0) {
+                if(coach[n-1].seatHG[choice] == genderMatch || coach[n-1].seatList[choice] == 0) {
+                    //coach[n-1].seatList[choice-1] = -1;
+                    coach[n-1].seatHG[choice-1] = -1;
+                    
+                    printf(BHGRN "\n                  You have to complete booking ASAP!\n\n" COLOR_RESET);
+                    x = 1;
+                    system("                  pause");
+            } else {
+                    printf(BHRED "\n                  Sorry! You cann't seat beside your unknown opposite gender.\n\n" COLOR_RESET);
+                    system("                  pause");
                 }
             } else if(choice == 2 || (choice-2)%4 == 0) {
-                if(coach[n-1].seatList[choice-2] == genderMatch || coach[n-1].seatList[choice-2] == 0) {
-                    coach[n-1].seatList[choice-1] = genderMatch;
-                    printf(BHGRN "\n\nHurray! Seat booking successfull!\n\n" COLOR_RESET);
-                    system("pause");
+                if(coach[n-1].seatHG[choice-2] == genderMatch || coach[n-1].seatHG[choice-2] == 0) {
+                    //coach[n-1].seatList[choice-1] = -1;
+                    coach[n-1].seatHG[choice-1] = -1;
+                    printf(BHGRN "\n\n                  You have to complete booking ASAP!\n\n" COLOR_RESET);
+                    system("                  pause");
                     x = 1;
                 } else {
-                    printf(BHRED "\n\nSorry! You cann't seat beside your unknown opposite gender.\n\n" COLOR_RESET);
-                    system("pause");
+                    printf(BHRED "\n\n                  Sorry! You cann't seat beside your unknown opposite gender.\n\n" COLOR_RESET);
+                    system("                  pause");
                 }   
             } else if((choice+1)%4 == 0) {
-                if(coach[n-1].seatList[choice] == genderMatch || coach[n-1].seatList[choice] == 0) {
-                    coach[n-1].seatList[choice-1] = genderMatch;
-                    printf(BHGRN "\n\nHurray! Seat booking successfull!\n\n" COLOR_RESET);
+                if(coach[n-1].seatHG[choice] == genderMatch || coach[n-1].seatHG[choice] == 0) {
+                    //coach[n-1].seatList[choice-1] = -1;
+                    coach[n-1].seatHG[choice-1] = -1;
+                    printf(BHGRN "\n\n                  You have to complete booking ASAP!\n\n" COLOR_RESET);
                     x = 1;
-                    system("pause");
+                    system("                  pause");
                 } else {
-                    printf(BHRED "\n\nSorry! You cann't seat beside your unknown opposite gender.\n\n" COLOR_RESET);
-                    system("pause");
+                    printf(BHRED "\n\n                  Sorry! You cann't seat beside your unknown opposite gender.\n\n" COLOR_RESET);
+                    system("                  pause");
                 }
             } else if(choice%4 == 0) {
-                if(coach[n-1].seatList[choice-2] == genderMatch || coach[n-1].seatList[choice-2] == 0) {
-                    coach[n-1].seatList[choice-1] = genderMatch;
-                    printf(BHGRN "\n\nHurray! Seat booking successfull!\n\n" COLOR_RESET);
+                if(coach[n-1].seatHG[choice-2] == genderMatch || coach[n-1].seatHG[choice-2] == 0) {
+                    //coach[n-1].seatList[choice-1] = -1;
+                    coach[n-1].seatHG[choice-1] = -1;
+                    printf(BHGRN "\n\n                  You have to complete booking ASAP!\n\n" COLOR_RESET);
                     x = 1;
-                    system("pause");
+                    system("                  pause");
                 } else {
-                    printf(BHRED "\n\nSorry! You cann't seat beside your unknown opposite gender.\n\n" COLOR_RESET);
-                    system("pause");
+                    printf(BHRED "\n\n                  Sorry! You cann't seat beside your unknown opposite gender.\n\n" COLOR_RESET);
+                    system("                  pause");
                 }
             }
         } else {
-            printf(BHRED "\nSorry! The seat has been already booked!\n" COLOR_RESET);
-            system("pause");
+            printf(BHRED "\n                  Sorry! The seat has been already booked!\n" COLOR_RESET);
+            system("                  pause");
             searchBus();
             return;
         }
@@ -833,6 +961,25 @@ void buyTicket(int n) {
     busAnimation();
     printf(WHTHB BHBLK"                                Updated Seat Plan                                " COLOR_RESET);
     seatPlan(n);
+    coach[n-1].seatHG[choice-1] = 0;
+    status = 0;
+    system("\n\n\n                                                pause");
+    invoice(coach[n-1].coachId, choice-1);
+    if(status != 1) {
+        printf("                  Ticket booking unsuccessfull!\n");
+        coach[n-1].seatHG[choice-1] = 0;
+        coach[n-1].seatList[choice-1] = 0;
+        system("                  pause");
+        buyTicket(n);
+        return;
+    }
+    UpdateStoredBusSeatData(n, choice);
+    UpdateStoredBusSeatHGData(n, choice);
+    system("cls");
+    busAnimation();
+    printf(WHTHB BHBLK"                                Updated Seat Plan                                " COLOR_RESET);
+    seatPlan(n);
+    printf("\n\n");
 
     int q;
     do {
@@ -840,12 +987,12 @@ void buyTicket(int n) {
         printf(BHWHT" 1. Search Bus\n");
         printf(" 2. Buy Ticket Again\n");
         printf(" 3. Main Menu\n\n");
-        printf(BHYEL "Enter your choice: "COLOR_RESET);
+        printf(BHYEL "Enter your choice:  "COLOR_RESET);
         scanf("%d", &q);
         switch(q) {
             case  1:
                 searchBus();
-                return;
+                return; 
             case  2:
                 buyTicket(n);
                 return;
@@ -858,12 +1005,117 @@ void buyTicket(int n) {
         } while(q>3 || q<1);
 }
 
+void invoice(int BusId, int exactSeatNum) {
+    system("cls");
+    busLogo();
+    printf("                     "WHTHB BHBLK "\n              Auto Genareted Invoice             \n" COLOR_RESET);
+    printf("\n\n");
+    struct tm tm = *localtime(&(time_t){ time(NULL) });
+
+    printf(BHCYN"     Bus name          : " HWHT "%-20s\n", coach[BusId-1].busName);
+    printf(BHCYN"     Bus ID            : " HWHT "%-20d\n", coach[BusId-1].coachId);
+    printf(BHCYN"     From              : " HWHT "%-20s\n", coach[BusId-1].boardingPoint);
+    printf(BHCYN"     To                : " HWHT "%-20s\n", coach[BusId-1].droppingPoint);
+    printf(BHCYN"     Selected Seat     : " HWHT "%-20d\n", exactSeatNum+1);
+    printf(BHCYN"     Ticket Price      : " HWHT "%-20d\n", coach[BusId-1].ticketPrice);
+    printf(BHCYN"     Your Name         : " HWHT "%-20s\n", id[$myUserId-1].fullName);
+    printf(BHCYN"     Seat for          : " HWHT "%-20s\n", showGender(genderMatch+1));
+    printf(BHCYN"     Invoice Issued at : " HWHT "%-20s\n\n", asctime(&tm));
+
+    int p;
+    printf(BHYEL "  You are trying to buy a ticket on this bus.\n\n");
+    printf(BHWHT "  Are your sure?\n" reset);
+    printf(BHCYN "      1. Sure\n");
+    printf(      "      0. Not Sure\n\n" reset);
+    printf(BHYEL "  Enter your choice: " COLOR_RESET);
+    scanf("%d", &p);
+    if(p != 1) {
+        buyTicket(BusId);
+        return;
+    }
+    printf(BHGRN "\n  You have to pay now!\n\n" COLOR_RESET);
+    system("pause");
+    paymentGateway(BusId, exactSeatNum);
+}
+
+void paymentGateway(int BusId, int exactSeatNum) {
+
+    int n;
+    int m;
+    int p;
+    int amount;
+    status = 0;
+
+    do {
+        system("cls");
+        busAnimation();
+        system("cls");
+        busLogo();
+        printf(WHTHB BHBLK "\n             Payment Gateway             \n" COLOR_RESET);
+        printf(BHYEL "\nChoose a Medium for Payment: \n");
+        printf(BHWHT "1. Visa\n");
+        printf("2. Master Card\n");
+        printf("3. BDBL\n");
+        printf("4. Paypal\n");
+        printf("5. Mobile Banking\n");
+        printf("0. Back\n\n"COLOR_RESET);
+        printf(BHCYN "Enter your choice: "COLOR_RESET);
+        scanf("%d", &n);
+        switch(n) {
+            case 1:
+                paymentMethod(BusId, exactSeatNum);
+                break;
+            case 2:
+                paymentMethod(BusId, exactSeatNum);
+                break;
+            case 3:
+                paymentMethod(BusId, exactSeatNum);
+                break;
+            case 4:
+                paymentMethod(BusId, exactSeatNum);
+                break;
+            case 5:
+                do {
+                    printf(BHWHT "  6. Nagad\n");
+                    printf("  7. Bkash\n");
+                    printf("  8. Dutch bangla\n");
+                    printf("  9. Back\n\n" COLOR_RESET);
+                    printf(BHCYN "Enter your choice: " COLOR_RESET);
+                    scanf("%d", &m);
+                    switch(m);
+                        case 6:
+                            paymentMethod(BusId, exactSeatNum);
+                            break;
+                        case 7:
+                            paymentMethod(BusId, exactSeatNum);
+                            break;
+                        case 8:
+                            paymentMethod(BusId, exactSeatNum);
+                            break;
+                        case 9: 
+                            paymentMethod(BusId, exactSeatNum);
+                            break;
+                } while (status != 1);
+                break;
+            case 0:
+                invoice(BusId, exactSeatNum);
+                break;
+            default:
+                printf(BHRED "Wrong choice.\n" COLOR_RESET);
+                printf("pause");
+                break;
+        }
+    }while(status != 1 || n>9 || n<0);
+
+
+}
+
 void seatPlan(int n) {
     printf("\n\n");
-    printf(BHCYN"                         Bus name    : " HYEL "%-10s\n", coach[n-1].busName);
-    printf(BHCYN"                         Bus ID      : " HYEL "%-10d\n", coach[n-1].coachId);
-    printf(BHCYN"                         From        : " HYEL "%-10s\n", coach[n-1].boardingPoint);
-    printf(BHCYN"                         To          : " HYEL "%-10s\n\n", coach[n-1].droppingPoint);
+    printf(BHCYN"                         Bus name    :   " BHWHT "%-15s\n", coach[n-1].busName);
+    printf(BHCYN"                         Bus ID      :   " BHWHT "%-15d\n", coach[n-1].coachId);
+    printf(BHCYN"                         From        :   " BHWHT "%-15s\n", coach[n-1].boardingPoint);
+    printf(BHCYN"                         To          :   " BHWHT "%-15s\n\n", coach[n-1].droppingPoint);
     printf(BLKHB BHWHT"                                Seat Plan                                " COLOR_RESET);
     printf("\n\n");
     int tabtemp = 0;
@@ -874,13 +1126,13 @@ void seatPlan(int n) {
                 printf("\n");
                 tabtemp = 0;
             }
-            printf("%d. %s \t", i+1, showSeatStatus(coach[n-1].seatList[i]));
+            printf("%d. %s \t", i+1, showSeatStatus(coach[n-1].seatHG[i]));
             continue;
         } else {
             if((i+1)%4==1 && (i+1)>=4) {
                 printf("\n");
             }
-            printf("%d. %s \t", i+1, showSeatStatus(coach[n-1].seatList[i]));
+            printf("%d. %s \t", i+1, showSeatStatus(coach[n-1].seatHG[i]));
             tabtemp++;
             if(tabtemp == 2 && i+6 < coach[n-1].seatNumber) {
                 printf("\t\t");
@@ -888,10 +1140,78 @@ void seatPlan(int n) {
             }
         }
     }
+    printf("\n\n\n");
 }
 
 void myBookedSeat() {
+    system("cls");
+    busLogo();
+    printf(WHTHB BHBLK "            My Booked Seat              \n" COLOR_RESET);
+    printf("\n\n");
+    int tempBus[50];
+    int tempSeat[50];
+    int t = 0;
+    int serial = 0;
+    int tempSeatNum;
 
+    for(int i=0; i<countCoach; i++) {
+        for(int j=0; j<coach[i].seatNumber; j++) {
+            if($myUserId == coach[i].seatList[j]) {
+                serial++;
+                printf(BHWHT"[Ticket Serial: %d]\n"COLOR_RESET, serial);
+                printf("Bus Name: %s\n", coach[i].busName);
+                printf("Bus ID: %d\n", coach[i].coachId);
+                tempBus[t] = coach[i].coachId;
+                printf("Boarding Point: %s\n", coach[i].boardingPoint);
+                printf("Dropping Point: %s\n", coach[i].droppingPoint);
+                printf("Boarding Time: %s\n", coach[i].boardingTime);
+                printf("Coach Type: %s\n", showCoachType( coach[i].coachType));
+                printf("Ticket Price: %d\n"BHGRN"(Paid)\n"COLOR_RESET, coach[i].ticketPrice);
+                tempSeatNum = j+i;
+                printf(BHYEL"Booked Seat Number: %d\n\n"COLOR_RESET, j+1);
+                tempSeat[t] = j+1; 
+                t++;
+            }
+        }
+    }
+
+    int n;
+    int m;
+    int x;
+    int y;
+    
+    if(serial>0) {
+
+        printf("Want to cancel any ticket?\n");
+        printf("Enter 1 for yes, 0 for no: ");
+        scanf("%d", &n);
+        if(n==1) {
+            printf("Enter ticket serial num: ");
+            scanf("%d", &m);
+            if(m<1 || m>serial) {
+                printf("Invalid Serial Number!\n\n");
+                system("pause");
+                myBookedSeat();
+                return;
+            }
+            x = tempBus[m-1];
+            y = tempSeat[m-1];
+            coach[x-1].seatList[y-1] = 0;
+            coach[x-1].seatHG[y-1] = 0;
+            UpdateStoredBusSeatHGData(x-1, y-1);
+            UpdateStoredBusSeatData(x-1, y-1);
+            printf("Your seat has been cancelled!\n");
+            system("pause");
+            myBookedSeat();
+        } else{
+            system("pause");
+            returnToMenu();
+        }
+    } else {
+        printf("You haven't booked any ticket till now!\n");
+        system("pause");
+        returnToMenu();
+    }
 }
 
 void cancelSeat() {
@@ -910,11 +1230,12 @@ void customerMenu() {
     printf("  2. Bus Schedule\n\n");
     printf("  3. Update Own Profile\n");
     printf("  4. My Booked Seat\n");
-    printf("  5. Cancel Seat\n\n");
-    printf("  6. User Manual\n");        
-    printf("  7. Our Branches\n");
-    printf("  8. Contact Us\n\n");
-    printf("  9. Logout " COLOR_RESET "(Logged as %s)\n\n", id[$myUserId-1].userName);
+    printf("  5. Cancel Seat\n");
+    printf("  6. Send a Msg to Admin\n\n");
+    printf("  7. User Manual\n");        
+    printf("  8. Our Branches\n");
+    printf("  9. Contact Us\n\n");
+    printf("  10. Logout " COLOR_RESET "(Logged as %s)\n\n", id[$myUserId-1].userName);
     printf(BHRED "         [0] Exit\n\n" COLOR_RESET);
     printf(BHYEL "Choose an option: " COLOR_RESET);
     scanf("%d", &n);
@@ -935,18 +1256,22 @@ void customerMenu() {
             myBookedSeat();
             break;    
         case 5:
-            cancelSeat();
+            //cancelSeat();
+            myBookedSeat();
             break;
         case 6:
-            userManual();
+            sendMsg();
             break;
         case 7:
-            ourBranches();
+            userManual();
             break;
         case 8:
-            contactUs();
+            ourBranches();
             break;
         case 9:
+            contactUs();
+            break;
+        case 10:
             logout();
             break;
         default:
@@ -986,7 +1311,8 @@ void executiveMenu() {
             showBusSummary();
             break;
         case 4:
-            cancelSeat();
+            //cancelSeat();
+            myBookedSeat();
             break;    
         case 5:
             updateOwnProfile();
@@ -1023,9 +1349,10 @@ void adminMenu() {
     printf("  7. Cancel any Seat\n");
     printf("  8. Create new Profiles\n");
     printf("  9. Update other Profiles\n");
-    printf("  10. Remove existing Profiles\n\n");
-    printf(BHCYN "  11. Update Own Profile\n");
-    printf("  12. Logout " COLOR_RESET "(Logged as %s)\n\n", id[$myUserId-1].userName);
+    printf("  10. Remove existing Profiles\n");
+    printf("  11. Customer Massages\n\n");
+    printf(BHCYN "  12. Update Own Profile\n");
+    printf("  13. Logout " COLOR_RESET "(Logged as %s)\n\n", id[$myUserId-1].userName);
     printf(BHRED "         [0] Exit\n\n" COLOR_RESET);
 
     printf(BHYEL "\n  Choose an option: " COLOR_RESET);
@@ -1065,9 +1392,12 @@ void adminMenu() {
             removeExistingProfiles();
             break;
         case 11:
-            updateOwnProfile();
+            getMsg();
             break;
         case 12:
+            updateOwnProfile();
+            break;
+        case 13:
             logout();
             break;
         case 0:
@@ -1081,35 +1411,53 @@ void adminMenu() {
 }
 
 void setBusSchedule() {
-    system("cls");
     busAnimation();
+    system("cls");
+    busLogo();
     printf(WHTHB BHBLK "\n             Create Bus Schedule             \n" COLOR_RESET);
     char ctemp;
     countCoach++;
-    printf("Bus Name: ");
+    printf(BHCYN "\n  Bus Name: " COLOR_RESET);
     scanf("%c", &ctemp);
     scanf("%[^\n]", coach[countCoach-1].busName);
-    printf("Boarding Point: ");
+    printf(BHCYN "  Boarding Point: " COLOR_RESET);
     scanf("%s", coach[countCoach-1].boardingPoint);
-    printf("Dropping Point: ");
+    printf(BHCYN "  Dropping Point: " COLOR_RESET);
     scanf("%s", coach[countCoach-1].droppingPoint);
-    printf("Boarding Time: ");
+    printf(BHCYN "  Boarding Time: " COLOR_RESET);
     scanf("%c", &ctemp);
     scanf("%[^\n]", coach[countCoach-1].boardingTime);
-    printf("Seat Number: (41,45,49,53,57): ");
-    scanf("%d", &coach[countCoach-1].seatNumber);
-    printf("Coach Type: (1 for ac, 0 for non ac)");
+
+    bool p;
+    do {      
+        printf(BHCYN "  Seat Number (41,45,49,53,57): " COLOR_RESET);
+        scanf("%d", &coach[countCoach-1].seatNumber);
+
+        if(coach[countCoach-1].seatNumber == 41 || coach[countCoach-1].seatNumber == 45 || coach[countCoach-1].seatNumber == 49 || coach[countCoach-1].seatNumber == 53 || coach[countCoach-1].seatNumber == 57) {
+            p = 1;
+        } else {
+            p = 0;
+            printf(BHRED "\n  Seat number doesn't match with our bus requirements.\n\n" COLOR_RESET);
+        }
+    } while (p != 1);
+
+    printf(BHCYN "  Coach Type (1 for ac, 0 for non ac): " COLOR_RESET);
     scanf("%d", &coach[countCoach-1].coachType);
-    printf("Ticket Price: ");
+    printf(BHCYN "  Ticket Price: " COLOR_RESET);
     scanf("%d", &coach[countCoach-1].ticketPrice);
-    
     coach[countCoach-1].coachId = countCoach;
     for(int i=0; i<60; i++) {
         coach[countCoach-1].seatList[i] = 0;
     }
-
-    printf("New bus and route has been inserted\n");
-    searchBus();
+    coach[countCoach-1].coachId = countCoach;
+    for(int i=0; i<60; i++) {
+        coach[countCoach-1].seatHG[i] = 0;
+    }
+    printf(BHYEL "\n  New bus and route has been inserted...\n\n" COLOR_RESET);
+    system("pause");
+    system("cls");
+    appendBusData();
+    returnToMenu();
 }
 
 void updateBusScedule() {
@@ -1121,7 +1469,13 @@ void updateBusTicket() {
 }
 
 void showBusSummary() {
-
+    busAnimation();
+    system("cls");
+    busLogo();
+    printf("\n\n\n                                     ");
+    printf(WHTHB BHBLK"                 Bus Summary                 " COLOR_RESET);
+    printf("\n\n\n");
+    allBusSum();
 } 
 
 void createNewProfiles() {
@@ -1129,7 +1483,11 @@ void createNewProfiles() {
 } 
 
 void updateOtherProfiles() {
-
+    printf("Update Other Profiles\n\n");
+    for(int i=0; i<countUser; i++) {
+        printf("%d %s %s %s %d %d\n", id[i].userId, id[i].fullName, id[i].userName, id[i].userPass, id[i].userAge, id[i].userRole);  
+    }
+    
 }
 
 void removeExistingProfiles() {
@@ -1193,11 +1551,13 @@ const char* showCoachType(bool icoachType) {
 
 const char* showSeatStatus(int iseatStatus) {
     if(iseatStatus == 0) {
-        return "\033[1;32mEmpty\033[1;0m";
-    } else if(iseatStatus == 1) {
-        return "\033[1;34mMale\033[1;0m";
+        return "\e[0;37mEmpty\033[1;0m";
+    } else if(iseatStatus == -1){
+        return "\e[1;92mPending\e[0m";
+    } else if(iseatStatus == 1){
+        return "\e[1;94mMale\e[0m";
     } else if(iseatStatus == 2){
-        return "\033[1;31mFemale\033[1;0m";
+        return "\e[1;95mFemale\033[1;0m";
     }
 }
 
@@ -1211,4 +1571,403 @@ void contactUs() {
 
 void userManual() {
 
+}
+
+
+void storeDefaultUserData(){
+    allUserData = fopen("userdata.txt", "r");
+    if(allUserData == NULL) {
+        allUserData = fopen("userdata.txt", "w");
+        for(int i=0; i<countUser; i++) {
+            fprintf(allUserData, "%s,%s,%s,%d,%d,%d,%d\n", id[i].fullName, id[i].userName, id[i].userPass, id[i].userGender, id[i].userAge, id[i].userRole, id[i].userId);
+        }
+    } 
+    fclose(allUserData);
+}
+
+void storeDefaultBusData(){
+    allBusData = fopen("busdata.txt", "r");
+    if(allBusData == NULL) {
+        allBusData = fopen("busdata.txt", "w");
+        for(int i=0; i<countCoach; i++) {
+            fprintf(allBusData, "%s,%s,%s,%s,%d,%d,%d,%d\n", coach[i].busName, coach[i].boardingPoint, coach[i].droppingPoint, coach[i].boardingTime, coach[i].seatNumber, coach[i].coachType, coach[i].ticketPrice, coach[i].coachId);
+        }
+    } 
+    fclose(allBusData);
+    storeDefaultBusSeatData();
+    storeDefaultBusSeatHGData();
+}
+
+void storeDefaultBusSeatData(){
+    FILE* allBusSeatData[countCoach];
+    char folderName[30] = "Seat Data";
+    char filePath[256]; 
+
+    for (int i = 0; i < countCoach; i++) {
+        strcpy(filePath, folderName);
+        strcat(filePath, "/");
+        strcat(filePath, coach[i].busName);
+        strcat(filePath, ".txt");
+        printf("Attempting to open file: %s\n", filePath); 
+        allBusSeatData[i] = fopen(filePath, "r");
+        if(allBusSeatData[i] == NULL) {
+            allBusSeatData[i] = fopen(filePath, "w");
+            if(allBusSeatData[i] == NULL) {
+                perror("Error opening file for writing");
+                continue; 
+            }
+            for (int j = 0; j < coach[i].seatNumber; j++) {
+                fprintf(allBusSeatData[i], "%d,", coach[i].seatList[j]); 
+            }
+        } else {
+            printf("File already exists: %s\n", filePath);
+        }
+        fclose(allBusSeatData[i]);
+    }
+}
+
+void storeDefaultBusSeatHGData(){
+    FILE* allBusSeatHGData[countCoach];
+    char folderName[30] = "Seat HG Data";
+    char filePath[256]; 
+
+    for (int i = 0; i < countCoach; i++) {
+        strcpy(filePath, folderName);
+        strcat(filePath, "/");
+        strcat(filePath, coach[i].busName);
+        strcat(filePath, ".txt");
+        printf("Attempting to open file: %s\n", filePath); 
+        allBusSeatHGData[i] = fopen(filePath, "r");
+        if(allBusSeatHGData[i] == NULL) {
+            allBusSeatHGData[i] = fopen(filePath, "w");
+            if(allBusSeatHGData[i] == NULL) {
+                perror("Error opening file for writing");
+                continue; 
+            }
+            for (int j = 0; j < coach[i].seatNumber; j++) {
+                fprintf(allBusSeatHGData[i], "%d,", coach[i].seatHG[j]); 
+            }
+        } else {
+            printf("File already exists: %s\n", filePath);
+        }
+        fclose(allBusSeatHGData[i]);
+    }
+}
+
+void UpdateStoredUserData(){
+    allUserData = fopen("userdata.txt", "w");
+    for(int i=0; i<countUser; i++) {
+        fprintf(allUserData, "%s,%s,%s,%d,%d,%d,%d\n", id[i].fullName, id[i].userName, id[i].userPass, id[i].userGender, id[i].userAge, id[i].userRole, id[i].userId);
+    }
+    fclose(allUserData);
+}
+
+void UpdateStoredBusSeatData(int exactBusId, int exactSeatNum){
+    FILE* allBusSeatData[countCoach];
+    char folderName[30] = "Seat Data";
+    char filePath[256]; 
+
+    strcpy(filePath, folderName);
+    strcat(filePath, "/");
+    strcat(filePath, coach[exactBusId-1].busName);
+    strcat(filePath, ".txt");
+    allBusSeatData[exactBusId-1] = fopen(filePath, "w");
+    for (int j = 0; j < coach[exactBusId-1].seatNumber; j++) {
+        if(exactSeatNum-1 == j) {
+            fprintf(allBusSeatData[exactBusId-1], "%d,", coach[exactBusId-1].seatList[exactSeatNum-1]); 
+            continue;
+        }
+        fprintf(allBusSeatData[exactBusId-1], "%d,", coach[exactBusId-1].seatList[j]); 
+    }
+    fclose(allBusSeatData[exactBusId-1]); 
+}
+
+void UpdateStoredBusSeatHGData(int exactBusId, int exactSeatNum){
+    FILE* allBusSeatHGData[countCoach];
+    char folderName[30] = "Seat HG Data";
+    char filePath[256]; 
+
+    strcpy(filePath, folderName);
+    strcat(filePath, "/");
+    strcat(filePath, coach[exactBusId-1].busName);
+    strcat(filePath, ".txt");
+    allBusSeatHGData[exactBusId-1] = fopen(filePath, "w");
+    for (int j = 0; j < coach[exactBusId-1].seatNumber; j++) {
+        if(exactSeatNum-1 == j) {
+            fprintf(allBusSeatHGData[exactBusId-1], "%d,", coach[exactBusId-1].seatHG[exactSeatNum-1]); 
+            continue;
+        }
+        fprintf(allBusSeatHGData[exactBusId-1], "%d,", coach[exactBusId-1].seatHG[j]); 
+    }
+    fclose(allBusSeatHGData[exactBusId-1]); 
+}
+
+
+void scanUserData() {
+    allUserData = fopen("userdata.txt", "r");
+    int i = 0;
+    char line[300];
+
+    if(allUserData != NULL) {
+        while(fgets(line, sizeof(line), allUserData) != NULL) {
+        sscanf(line, "%[^,],%[^,],%[^,],%d,%d,%d,%d",id[i].fullName,id[i].userName,id[i].userPass,&id[i].userGender,&id[i].userAge,&id[i].userRole,&id[i].userId);
+        i++;
+    }
+    countUser = i++;
+    fclose(allUserData);
+}
+}
+
+void scanBusData() {
+    allBusData = fopen("busdata.txt", "r");
+    int i = 0;
+    char line[300];
+
+    if(allBusData != NULL) {
+        while(fgets(line, sizeof(line), allBusData) != NULL) {
+            sscanf(line, "%[^,],%[^,],%[^,],%[^,],%d,%d,%d,%d",coach[i].busName, coach[i].boardingPoint, coach[i].droppingPoint, coach[i].boardingTime, &coach[i].seatNumber, &coach[i].coachType, &coach[i].ticketPrice, &coach[i].coachId);
+            i++;
+        }
+        countCoach = i++;
+        fclose(allBusData);
+        scanBusSeatData();
+        scanBusSeatHGData();
+    }
+}
+
+void scanBusSeatData() {
+    FILE* allBusSeatData[countCoach];
+    char folderName[30] = "Seat Data";
+    char filePath[256]; 
+
+    for (int i = 0; i < countCoach; i++) {
+        strcpy(filePath, folderName);
+        strcat(filePath, "/");
+        strcat(filePath, coach[i].busName);
+        strcat(filePath, ".txt");
+        allBusSeatData[i] = fopen(filePath, "r");
+        if(allBusSeatData[i] != NULL) {
+            for (int j = 0; j < coach[i].seatNumber; j++) {
+                fscanf(allBusSeatData[i], "%d,", &coach[i].seatList[j]); 
+            }
+        } else {
+            printf("File %s is empty!\n", filePath);
+        }
+        fclose(allBusSeatData[i]);
+    }
+}
+
+void scanBusSeatHGData() {
+    FILE* allBusSeatHGData[countCoach];
+    char folderName[30] = "Seat HG Data";
+    char filePath[256]; 
+
+    for (int i = 0; i < countCoach; i++) {
+        strcpy(filePath, folderName);
+        strcat(filePath, "/");
+        strcat(filePath, coach[i].busName);
+        strcat(filePath, ".txt");
+        allBusSeatHGData[i] = fopen(filePath, "r");
+        if(allBusSeatHGData[i] != NULL) {
+            for (int j = 0; j < coach[i].seatNumber; j++) {
+                fscanf(allBusSeatHGData[i], "%d,", &coach[i].seatHG[j]); 
+            }
+        } else {
+            printf("File %s is empty!\n", filePath);
+        }
+        fclose(allBusSeatHGData[i]);
+    }
+}
+
+
+void appendUserData(){
+    allUserData = fopen("userdata.txt", "a");
+    fprintf(allUserData, "%s,%s,%s,%d,%d,%d,%d\n", id[countUser-1].fullName, id[countUser-1].userName, id[countUser-1].userPass, id[countUser-1].userGender, id[countUser-1].userAge, id[countUser-1].userRole, id[countUser-1].userId);
+    fclose(allUserData);
+}
+
+void appendBusData(){
+    allBusData = fopen("busdata.txt", "a");
+    fprintf(allBusData, "%s,%s,%s,%s,%d,%d,%d,%d\n", coach[countCoach-1].busName, coach[countCoach-1].boardingPoint, coach[countCoach-1].droppingPoint, coach[countCoach-1].boardingTime, coach[countCoach-1].seatNumber, coach[countCoach-1].coachType, coach[countCoach-1].ticketPrice, coach[countCoach-1].coachId);
+    fclose(allBusData);
+    appendBusSeatData();
+    appendBusSeatHGData();
+}
+
+void appendBusSeatData() {
+    storeDefaultBusSeatData();
+}
+
+void appendBusSeatHGData() {
+    storeDefaultBusSeatHGData();
+}
+
+void tempuserlist(){
+    printf("Usercount: %d\n", countUser);
+    for(int i=0; i<countUser; i++) {
+        printf("%s %s %s %d %d %d %d\n", id[i].fullName, id[i].userName, id[i].userPass, id[i].userGender, id[i].userAge, id[i].userRole, id[i].userId);
+}
+system("pause");
+nonLogged_Menu();
+}
+
+
+
+void allBusSum() {
+    int allBusSum[countCoach];
+    int totalTicketSold = 0;
+
+    // Calculate bus rankings
+    for(int i = 0; i < countCoach; i++) {
+        allBusSum[i] = coach[i].seatNumber - availableSeat(i + 1);
+        totalTicketSold += allBusSum[i];
+    }
+    int n = 0;
+    printf("Total ticket Sold: %d\n", totalTicketSold);
+    printf("Total Active Bus: %d\n", countCoach);
+    printf("Total Users: %d\n", countUser);
+    
+    int x = 0;
+    int y = 0;
+    int z = 0;
+
+    for(int i=0; i<countUser; i++) {
+        if(id[i].userRole == 3) {
+            x++;
+        }
+        if(id[i].userRole == 2) {
+            y++;
+        }
+        if(id[i].userRole == 1) {
+            z++;
+        }
+    }
+    printf("_Total Customer: %d\n", z);
+    printf("_Total Executive: %d\n", y);
+    printf("_Total Admin: %d\n", x);
+    
+    printf(BHWHT"\n\n\nBusID       Bus Name             Ticket Sold     Profit\n"COLOR_RESET);
+    // Display the sorted bus rankings and corresponding bus indices
+    for(int i = 0; i < countCoach; i++) {
+        if(allBusSum[i] == 0) {
+            continue;
+        } else {
+            printf("%-12d %-20s %-15d %dtk\n", i, coach[i].busName, allBusSum[i], allBusSum[i]*coach[i].ticketPrice);
+        }
+    }
+    
+    int m;
+    do{
+        printf(BHWHT"\n\nNow what?\n"COLOR_RESET);
+        printf("1. Show bus wise ticket holders\n");
+        printf("2. Go back to main menu\n");
+        printf("0. Exit\n\n");
+        printf("Enter your choice: ");
+        scanf("%d", &m);
+        switch(m) {
+            case 1:
+                allTicketHolder();
+                return;
+            case 2:
+                returnToMenu();
+                return;
+            case 0:
+                ifExit();
+                break;
+            default:
+                printf("Wrong choice!\n");
+                system("pause\n");
+                break;
+        }
+    } while(m<0 && m>2);
+}
+
+void allTicketHolder() {
+    int n;
+    printf("\n\nEnter BusID From the List: ");
+    scanf("%d", &n);
+    printf("\n\n");
+    
+    if(n>countCoach || n<0) {
+        printf("Wrong Choice\n");
+        system("pause");
+        showBusSummary();
+        return;
+    }
+
+    int serial;
+    for(int j=0; j<coach[n].seatNumber; j++) {
+        if(coach[n].seatList[j] != 0) {
+            serial++;
+            printf(BHWHT"[Ticket Serial: %d]\n"COLOR_RESET, serial);
+            printf("Name: %s\n", id[coach[n].seatList[j]-1].fullName);
+            printf("Role: %s\n", showRole(id[coach[n].seatList[j]-1].userRole));
+            printf("Bus Name: %s\n", coach[n].busName);
+            printf("Ticket Price: %d\n"BHGRN"(Paid)\n"COLOR_RESET, coach[n].ticketPrice);
+            printf(BHYEL"Booked Seat Number: %d\n\n\n"COLOR_RESET, j+1);
+        }
+    }
+    system("pause");
+    showBusSummary();
+
+}
+
+void paymentMethod(int BusId, int exactSeatNum) {
+    int p;
+    do {
+        printf(BHRED "\nNeeded Amount: %d\n" COLOR_RESET, coach[BusId-1].ticketPrice);
+        printf(BHWHT "1. Pay\n");
+        printf("0. Back\n");
+        printf(BHCYN "\nPut your dicision: " COLOR_RESET);
+        scanf("%d", &p);
+        if(p == 0) {
+            paymentGateway(BusId, exactSeatNum);
+        } else if(p == 1) {
+            printf(BHYEL"\n%d has been paid!\n" COLOR_RESET, coach[BusId-1].ticketPrice);
+            printf(BHGRN "Horray! Ticket has been booked!\n\n"COLOR_RESET);
+                                
+            totalMoney = totalMoney + coach[BusId-1].ticketPrice;
+            coach[BusId-1].seatList[exactSeatNum] = $myUserId;
+            coach[BusId-1].seatHG[exactSeatNum] = genderMatch;
+            status = 1;
+            system("pause\n");
+        }
+                                
+    } while(status != 1);
+}
+
+void sendMsg(){
+    system("cls");
+
+    int n;
+    char temp;
+    char fullmsg[280];
+    printf("Send a short msg to admin\n");
+    printf("Write here: ");
+    scanf("%c", &temp);
+    scanf("%[^\n]", fullmsg);
+    msg = fopen("userMsg.txt", "a");
+    fprintf(msg, "%d,%s\n", $myUserId-1, fullmsg);
+    fclose(msg);
+    printf("Massage has been sent!\n");
+    system("pause");
+    returnToMenu();
+}
+void getMsg() {
+    system("cls");
+    
+    int n;
+    char fullmsg[280];
+    char msgtime[100];
+    msg = fopen("userMsg.txt", "r");
+    int i = 0;
+    char line[400];    
+    while(fgets(line, sizeof(line), msg) != NULL) {
+        sscanf(line, "%d, %[^\n]",&n, fullmsg);
+        i++;
+        printf(BHBLK "@" BHMAG "%s" BHYEL " said:" BHWHT " %s" COLOR_RESET, id[n].userName, fullmsg);
+    }
+    fclose(msg);
+    system("pause");
+    returnToMenu();
 }
