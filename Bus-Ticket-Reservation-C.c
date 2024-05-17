@@ -207,6 +207,7 @@ void storeDefaultUserData();
 void scanUserData();
 void appendUserData();
 void UpdateStoredUserData();
+void UpdateStoredBusData();
 void storeDefaultBusData();
 void scanBusData();
 void appendBusData();
@@ -1461,7 +1462,137 @@ void setBusSchedule() {
 }
 
 void updateBusScedule() {
+    busAnimation();
+    system("cls");
+    busLogo();
+    printf(WHTHB BHBLK "\n             Update Bus Schedule             \n" COLOR_RESET);
+    char ctemp;
+
+    printf("\n\nWe have total %d buses available now.\n", countCoach-1);
+    printf("You can update, evaluate or manupulate each bus data!\n\n");
+
+    printf("Our  buses with CoachID:\n");
+
+    printf("Bus name        Bus ID\t");
+    printf("Bus name        Bus ID\n");
+    for(int i=0; i<countCoach; i++) {
+        printf("%-15s (%d)\t", coach[i].busName, i+1);
+        if((i+1)%2==0) {
+            printf("\n");
+        }
+    }
+    printf("\n\n");
+    int n;
+    do {
+        printf("Do you want to change any bus detail?\n");
+        printf("1. Yes\n");
+        printf("2. Back to Main Menu\n");
+        printf("Enter your choice: ");
+        scanf("%d", &n);
+        switch(n) {
+            case 1:
+                break;
+            case 2: 
+                returnToMenu();
+                return;
+            default: 
+                printf("Wrong Input!\n");
+                system("pause");
+                updateBusScedule();
+                return;
+        }
+    } while(n != 1 && n != 2);
+
+    int m;
+    do {
+        printf("\nEnter the bus ID your want to update: ");
+        scanf("%d", &m);
+        if(m-1<0 || m-1>countCoach-1) {
+            printf("There is no bus wiht this ID!\n");
+            printf("Try Again.\n");
+        }
+    } while (m-1<0 || m-1>countCoach-1);
+
+    printf("\n\nYour choosen bus's info:\n");
+    printf("1. Bus name:           %s\n", coach[m-1].busName);
+    printf("2. Boarding Point:     %s\n", coach[m-1].boardingPoint);
+    printf("3. Dropping Point:     %s\n", coach[m-1].droppingPoint);
+    printf("4. Boarding time:      %s\n", coach[m-1].boardingTime);
+    printf("5. Seat Number:        %d\n", coach[m-1].seatNumber);
+    printf("6. Coach Type:         %s\n", showCoachType(coach[m-1].coachType));
+    printf("7. Ticket price:       %d tk\n\n", coach[m-1].ticketPrice);
     
+    printf("[0] to go back to Main Manu\n\n");
+
+    int x;
+    do {
+        printf("  What you Want to change?\n");
+        printf("(Enter '8' If you have Done)\n\n");
+        printf("Enter your choice: ");
+        scanf("%d", &x);
+        switch(x) {
+            case 1:
+                printf("New bus name: ");
+                scanf("%c", &ctemp); 
+                scanf("%[^\n]", coach[m-1].busName);
+                printf("Bus name has been changed!\n");
+                break;
+            case 2: 
+                printf("New Boarding Point: ");
+                scanf("%c", &ctemp); 
+                scanf("%[^\n]", coach[m-1].boardingPoint);
+                printf("Boarding Point has been changed!\n");
+                break;
+            case 3:
+                printf("New Dropping Point: ");
+                scanf("%c", &ctemp); 
+                scanf("%[^\n]", coach[m-1].droppingPoint);
+                printf("Dropping Point has been changed!\n\n"); 
+                break;
+            case 4: 
+                printf("New Boarding Time: ");
+                scanf("%c", &ctemp); 
+                scanf("%[^\n]", coach[m-1].boardingTime);
+                printf("Boarding Time has been changed!\n\n"); 
+                break;
+            case 5:
+                printf("New Seat Number: ");
+                scanf("%d", &coach[m-1].seatNumber);
+                printf("Seat Number has been changed!\n\n"); 
+                break;
+            case 6: 
+                printf("New Coach Type: ");
+                scanf("%d", &coach[m-1].coachType);
+                printf("Coach Type has been changed!\n\n"); 
+                break;
+            case 7:
+                printf("New Ticket Price: ");
+                scanf("%d", &coach[m-1].ticketPrice);
+                printf("Ticket Price has been changed!\n\n");  
+                break;
+            case 0:
+                returnToMenu();
+                return;
+            case 8:
+                break;
+            default:
+                printf("Wrong Input!\n");
+                break; 
+        }
+    } while (x != 8 && x != 0);
+    UpdateStoredBusData();
+    
+    printf(BHWHT "\nUpdated Bus Data:\n" COLOR_RESET);
+        printf("1. Bus name:           %s\n", coach[m-1].busName);
+    printf("2. Boarding Point:     %s\n", coach[m-1].boardingPoint);
+    printf("3. Dropping Point:     %s\n", coach[m-1].droppingPoint);
+    printf("4. Boarding time:      %s\n", coach[m-1].boardingTime);
+    printf("5. Seat Number:        %d\n", coach[m-1].seatNumber);
+    printf("6. Coach Type:         %s\n", showCoachType(coach[m-1].coachType));
+    printf("7. Ticket price:       %d tk\n\n", coach[m-1].ticketPrice);
+    system("pause");
+    updateBusScedule();
+
 }
 
 void updateBusTicket() {
@@ -1479,15 +1610,193 @@ void showBusSummary() {
 } 
 
 void createNewProfiles() {
+    busAnimation();
+    system("cls");
+    char currName[20];
+    char ctemp;
+    bool nameMatching;
+    printf(WHTHB BHBLK "             Create New Profiles            \n" COLOR_RESET);
+    printf(HBLK"       [Admin can create profiles as he want]\n\n");
+    countUser++;
+    printf(BHCYN "Fullname: " COLOR_RESET);
+    scanf("%c", &ctemp);
+    scanf("%[^\n]", id[countUser-1].fullName);
 
+    do{
+        printf(BHCYN "Username (no space allowed): " COLOR_RESET);
+        scanf("%s", currName);
+        for(int i = 0; i < countUser; i++) {
+            nameMatching = strcmp(currName, id[i].userName);
+
+            if(nameMatching == 0){
+                printf(BHRED "\n\n  Username isn't available!\n       Try Another one.\n\n" COLOR_RESET); 
+                system("pause"); 
+                break;          
+            }
+        }
+    } while(nameMatching == 0);
+
+    strcpy(id[countUser-1].userName, currName);
+    printf(BHGRN "Username is available.\n" COLOR_RESET);
+    printf(BHCYN "Password: " COLOR_RESET);
+    scanf("%s", id[countUser-1].userPass);
+    printf(BHCYN "Gender (0 for men, 1 for women): " COLOR_RESET);
+    scanf("%d", &id[countUser-1].userGender);
+    printf(BHCYN "Age: " COLOR_RESET);
+    scanf("%d", &id[countUser-1].userAge);
+    printf("\nHints:\n");
+    printf("User Role 1 means Customer\n");
+    printf("User Role 2 means Executive\n");
+    printf("User Role 3 means Admin\n\n");
+    printf(BHCYN "User Role: " COLOR_RESET);
+    scanf("%d", &id[countUser-1].userRole);
+
+    id[countUser-1].userId = countUser;
+    appendUserData();
+
+    printf("\n\n");
+    system("pause");
+    system("cls");
+    printf(BHGRN "\nAccount has been created!\n\n" COLOR_RESET);
+    printf(BHYEL "New User Informations: \n");
+    printf(BHCYN "Full name: %s \n", id[countUser-1].fullName);
+    printf("Username: %s \n", id[countUser-1].userName);
+    printf("Password: %s \n", id[countUser-1].userPass);
+    printf("Gender: %s \n", showGender(id[countUser-1].userGender));
+    printf("Age: %d \n", id[countUser-1].userAge);
+    printf("Role: %s \n", showRole(id[countUser-1].userRole));
+    printf("User ID: %d \n\n" COLOR_RESET, id[countUser-1].userId);
+
+    int p;
+    do{
+        printf("\nNow what?\n");
+        printf("1. Create more accounts\n");
+        printf("2. Main Menu\n");
+        printf("3. Logout\n");
+        printf("Enter your choice: ");
+        scanf("%d", &p);
+        switch(p) {
+            case 1:
+                createNewProfiles();
+                break;
+            case 2:
+                returnToMenu();
+                break;
+            case 3: 
+                logout();
+                break;
+            default: 
+                printf("Wrong Choice!\n");
+                break;
+        }
+    } while(p != 1 && p != 2 && p != 3);
 } 
 
 void updateOtherProfiles() {
+    busAnimation();
+    system("cls");
+    char ctemp;
     printf("Update Other Profiles\n\n");
-    for(int i=0; i<countUser; i++) {
-        printf("%d %s %s %s %d %d\n", id[i].userId, id[i].fullName, id[i].userName, id[i].userPass, id[i].userAge, id[i].userRole);  
+    printf("Our All Users: \n\n");
+    printf("UserID  FullName           UserName   UserPass         UserAge     Role\n");
+    for(int i=0; i<countUser-1; i++) {
+        printf("%-7d %-18s %-10s %-16s %-13d %-10s\n", id[i].userId, id[i].fullName, id[i].userName, id[i].userPass, id[i].userAge, showRole(id[i].userRole));  
     }
-    
+    printf("\n\n");
+
+    int n;
+    do {
+        printf("Do you want to change any bus detail?\n");
+        printf("1. Yes\n");
+        printf("2. Back to Main Menu\n");
+        printf("Enter your choice: ");
+        scanf("%d", &n);
+        switch(n) {
+            case 1:
+                break;
+            case 2: 
+                returnToMenu();
+                return;
+            default: 
+                printf("Wrong Input!\n");
+                system("pause");
+                updateOtherProfiles();
+                return;
+        }
+    } while(n != 1 && n != 2);
+
+    int m;
+    do {
+        printf("\nEnter the user ID your want to update: ");
+        scanf("%d", &m);
+        if(m-1<0 || m-1>countUser-1) {
+            printf("There is no user with this ID!\n");
+            printf("Try Again.\n");
+        }
+    } while (m-1<0 || m-1>countUser-1);
+
+    printf("\n\nYour choosen user's info:\n");
+    printf("1. Fullname\n");
+    printf("2. Username\n");
+    printf("3. User Password\n");
+    printf("4. User Gender\n");
+    printf("5. User Age\n");
+    printf("6. User Role\n\n");
+    printf("[0] to go back to Main Manu\n\n");
+
+    int x;
+    do {
+        printf("  What you Want to change?\n");
+        printf("(Enter '7' If you have Done)\n\n");
+        printf("Enter your choice: ");
+        scanf("%d", &x);
+        switch(x) {
+            case 1:
+                printf("New fullname: ");
+                scanf("%c", &ctemp); 
+                scanf("%[^\n]", id[m-1].fullName);
+                printf("Fullname has been changed!\n");
+                break;
+            case 2: 
+                printf("New username: ");
+                scanf("%c", &ctemp); 
+                scanf("%[^\n]", id[m-1].userName);
+                printf("Username has been changed!\n");
+                break;
+            case 3:
+                printf("New userpass: ");
+                scanf("%c", &ctemp); 
+                scanf("%[^\n]", id[m-1].userPass);
+                printf("Password has been changed!\n\n"); 
+                break;
+            case 4:
+                printf("New user gender: ");
+                scanf("%d", &id[m-1].userGender);
+                printf("Gender has been changed!\n\n"); 
+                break;
+            case 5: 
+                printf("New user Age: ");
+                scanf("%d", &id[m-1].userAge);
+                printf("Role has been changed!\n\n"); 
+                break;
+            case 6: 
+                printf("New user Role: ");
+                scanf("%d", &id[m-1].userRole);
+                printf("Role has been changed!\n\n"); 
+                break;
+            case 0:
+                returnToMenu();
+                return;
+            case 7:
+                break;
+            default:
+                printf("Wrong Input!\n");
+                break; 
+        }
+    } while (x != 7 && x != 0);
+    UpdateStoredUserData();
+    system("pause");
+    updateOtherProfiles();
 }
 
 void removeExistingProfiles() {
@@ -1660,6 +1969,15 @@ void UpdateStoredUserData(){
         fprintf(allUserData, "%s,%s,%s,%d,%d,%d,%d\n", id[i].fullName, id[i].userName, id[i].userPass, id[i].userGender, id[i].userAge, id[i].userRole, id[i].userId);
     }
     fclose(allUserData);
+}
+
+void UpdateStoredBusData() {
+    allBusData = fopen("busdata.txt", "w");
+    for(int i=0; i<countCoach; i++) {
+        fprintf(allBusData, "%s,%s,%s,%s,%d,%d,%d,%d\n", coach[i].busName, coach[i].boardingPoint, coach[i].droppingPoint, coach[i].boardingTime, coach[i].seatNumber, coach[i].coachType, coach[i].ticketPrice, coach[i].coachId);
+    }
+     
+    fclose(allBusData);
 }
 
 void UpdateStoredBusSeatData(int exactBusId, int exactSeatNum){
@@ -1882,6 +2200,7 @@ void allBusSum() {
     } while(m<0 && m>2);
 }
 
+
 void allTicketHolder() {
     int n;
     printf("\n\nEnter BusID From the List: ");
@@ -1970,4 +2289,4 @@ void getMsg() {
     fclose(msg);
     system("pause");
     returnToMenu();
-}
+} 
