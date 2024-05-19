@@ -1294,6 +1294,50 @@ void myBookedSeat() {
 }
 
 void cancelSeat() {
+    busAnimation();
+    system("cls");
+    busLogo();
+    printf(WHTHB BHBLK "\n             Cancel Any Seat             \n" COLOR_RESET);
+    int n;
+    printf("\n\nYou can cancel any ticket you want\n\n");
+    printf("Enter BusID (Press 0 to return): ");
+    scanf("%d", &n);
+    if(n == 0) {
+        returnToMenu();
+        return;
+    } 
+    if(n>countCoach || n<1) {
+        printf("\n\nWrong BusID!\n\n");
+        system("pause");
+        cancelSeat();
+        return;
+    }
+    printf("\n\n");
+    seatPlan(n);
+    int m;
+
+    do{
+        printf("Enter the seat number you want to empty: ");
+        scanf("%d", &m);
+        if(m>coach[n-1].seatNumber && m<coach[n-1].seatNumber) {
+            printf("\n\nWrong Seat Number.\n\n");
+        }
+        if(coach[n-1].seatList[m-1] == 0) {
+            printf("\n\nSeat is already Empty!\n\n");
+        } else{
+            coach[n-1].seatList[m-1] = 0;
+            coach[n-1].seatHG[m-1] = 0;
+            UpdateStoredBusSeatData(n, m);
+            UpdateStoredBusSeatHGData(n, m);
+            system("cls");
+            printf("                            ");
+            printf(WHTHB BHBLK "\n\n             Cancel Any Seat             \n" COLOR_RESET);
+            seatPlan(n);
+            printf("\n\n %d Number Seat of %s Bus Has Been Cancelled!\n\n", m, coach[n-1].busName);
+            system("pause");
+            cancelSeat();
+        }
+    } while(true);
 
 }
 
@@ -1421,7 +1465,7 @@ void adminMenu() {
     printf("  2. View Bus Schedule\n\n");
 
     printf(BHYEL "  Exclusive Admin Features: \n");
-    printf(BHBLU "  3. Add New Bus & Route\n");
+    printf(BHCYN "  3. Add New Bus & Route\n");
     printf("  4. Update Bus & Route\n");
     printf("  5. Activate or Inactivate Bus\n");
     printf("  6. Show bus summary\n");
@@ -1430,7 +1474,7 @@ void adminMenu() {
     printf("  9. Update other Profiles\n");
     printf("  10. Restrict or Activate Users\n");
     printf("  11. Customer Massages\n\n");
-    printf("  12. Enable Maintenance Mode\n\n");
+    printf(BHRED "  12. Enable Maintenance Mode\n\n");
     printf(BHCYN "  13. Update Own Profile\n");
     printf("  14. Logout " COLOR_RESET "(Logged as %s)\n\n", id[$myUserId-1].userName);
     printf(BHRED "         [0] Exit\n\n" COLOR_RESET);
@@ -1903,51 +1947,78 @@ void updateOtherProfiles() {
 void restrictOrActivateUser() {
     busAnimation();
     system("cls");
-    printf("== Restrict or Activate a Profiles ==\n\n");
-    allUserList();
+    printf("\n\n\n");
+    printf("                        ");
+    printf(WHTHB BHBLK"            Restrict or Activate User Accounts         " COLOR_RESET);
+    printf("\n\n");
+    printf(BHYEL"\n      All users with user ID:\n\n"COLOR_RESET);
+    printf(BHWHT "      UserID\t   Username\t       Status\t");
+    printf("      UserID\t   Username\t       Status\n" COLOR_RESET);
+    for(int i=0; i<countUser; i++) {
+        printf(BHWHT "      %-12d" COLOR_RESET " %-18s %-18s\t", id[i].userId, id[i].userName, showUserStatus(id[i].userStatus));
+        if((i+1)%2==0) {
+            printf("\n");
+        }
+    }
+    printf("\n\n");
+
     int n;
     int m;
     int p;
 
     do{
-        printf("Choose an option\n");
-        printf("1. Restrict an active user\n");
+        printf(BHCYN "Choose an option\n");
+        printf(BHWHT "1. Restrict an active user\n");
         printf("2. Activate a restricted user \n");
         printf("3. Return to Menu \n\n");
-        printf("Enter your choice: ");
+        printf(BHYEL "Enter your choice: " COLOR_RESET);
         scanf("%d", &n);
         if(n == 1) {
-            printf("Enter the user id to restrict: ");
+            printf(BHWHT "Enter the user id to restrict: ");
             scanf("%d", &m);
             if(m<1 || m>countUser) {
-                printf("Invalid ID Number!\n\n");
+                printf(BHRED "Invalid ID Number!\n\n");
                 system("pause");
                 restrictOrActivateUser();
                 return;
             }
             if(id[m-1].userStatus == 0) {
-                printf("The user is already restricted!\n\n");
+                printf(BHRED "The user is already restricted!\n\n");
                 system("pause");
                 restrictOrActivateUser();
                 return;
             } 
             id[m-1].userStatus = 0;
             UpdateStoredUserData();
+            printf("\n\n\n");
+    printf("                        ");
+    printf(WHTHB BHBLK"            Restrict or Activate User Accounts         " COLOR_RESET);
+    printf("\n\n");
+    printf(BHYEL"\n      All users with user ID:\n\n"COLOR_RESET);
+    printf(BHWHT "      UserID\t   Username\t       Status\t");
+    printf("      UserID\t   Username\t       Status\n" COLOR_RESET);
+    for(int i=0; i<countUser; i++) {
+        printf(BHWHT "      %-12d" COLOR_RESET " %-18s %-18s\t", id[i].userId, id[i].userName, showUserStatus(id[i].userStatus));
+        if((i+1)%2==0) {
+            printf("\n");
+        }
+    }
+    printf("\n\n");
             
-            printf("\n\n" BHYEL "%s " BHRED "has been Restricted!\n", id[m-1].fullName);
+            printf("\n\n" BHYEL "%s " BHWHT "has been Restricted!\n", id[m-1].fullName);
             printf(BHWHT "The user will not be able to login or buy a seat anymore!\n\n" COLOR_RESET);
 
         } else if(n == 2) {
-            printf("Enter the user id to activate: ");
+            printf(BHWHT "Enter the user id to activate: " COLOR_RESET);
             scanf("%d", &p);
             if(p<1 || p>countUser) {
-                printf("Invalid ID Number!\n\n");
+                printf(BHRED "Invalid ID Number!\n\n" COLOR_RESET);
                 system("pause");
                 restrictOrActivateUser();
                 return;
             }
             if(id[p-1].userStatus == 1) {
-                printf("The user is already activated!\n\n");
+                printf(BHYEL "The user is already activated!\n\n" COLOR_RESET);
                 system("pause");
                 restrictOrActivateUser();
                 return;
@@ -1955,17 +2026,29 @@ void restrictOrActivateUser() {
             id[p-1].userStatus = 1;
             UpdateStoredUserData();
             system("cls"); 
-            printf("== Restrict or Activate a Profiles ==\n\n");
-            allUserList();
-            printf("\n\n" BHYEL "%s " BHRED "has been Activated!\n", id[p-1].fullName);
+            printf("\n\n\n");
+    printf("                        ");
+    printf(WHTHB BHBLK"            Restrict or Activate User Accounts         " COLOR_RESET);
+    printf("\n\n");
+    printf(BHYEL"\n      All users with user ID:\n\n"COLOR_RESET);
+    printf(BHWHT "      UserID\t   Username\t       Status\t");
+    printf("      UserID\t   Username\t       Status\n" COLOR_RESET);
+    for(int i=0; i<countUser; i++) {
+        printf(BHWHT "      %-12d" COLOR_RESET " %-18s %-18s\t", id[i].userId, id[i].userName, showUserStatus(id[i].userStatus));
+        if((i+1)%2==0) {
+            printf("\n");
+        }
+    }
+    printf("\n\n");
+            printf("\n\n" BHYEL "%s " BHWHT "has been Activated!\n", id[p-1].fullName);
             printf(BHWHT "The user will be able to login and buy a seat now!\n\n" COLOR_RESET);
 
         } else if (n == 3) {
             returnToMenu();
             return;
         } else {
-            printf("\n\nWrong Insertion.\n");
-            printf("Try Again.\n\n");
+            printf(BHRED "\n\nWrong Insertion.\n");
+            printf(BHYEL "Try Again.\n\n");
         }
     } while (n!=1 && n!=2 && n!=3);
     system("pause");
@@ -1975,30 +2058,44 @@ void restrictOrActivateUser() {
 void restrictOrActivateCoach() {
     busAnimation();
     system("cls");
-    printf("== Restrict or Activate a Bus ==\n\n");
-    allBusList();
+    printf("\n\n\n");
+    printf("                             ");
+    printf(WHTHB BHBLK"            Restrict or Activate a Bus            " COLOR_RESET);
+    printf("\n\n");
+    
+    printf(BHYEL"\n      Our  buses with CoachID:\n\n"COLOR_RESET);
+    printf(BHWHT "      BusID\t   Bus name\t       Status\t");
+    printf("      BusID\t   Bus name\t       Status\n" COLOR_RESET);
+    for(int i=0; i<countCoach; i++) {
+        printf(BHWHT "      %-12d" COLOR_RESET " %-18s %-18s\t", coach[i].coachId, coach[i].busName, showCoachStatus(coach[i].coachStatus));
+        if((i+1)%2==0) {
+            printf("\n");
+        }
+    }
+    printf("\n\n");
+
     int n;
     int m;
     int p;
 
     do{
-        printf("Choose an option\n");
-        printf("1. Restrict an active Bus\n");
+        printf(BHCYN "Choose an option\n");
+        printf(BHWHT "1. Restrict an active Bus\n");
         printf("2. Activate an Inactive Bus \n");
         printf("3. Return to Menu \n\n");
-        printf("Enter your choice: ");
+        printf(BHYEL"Enter your choice: " COLOR_RESET);
         scanf("%d", &n);
         if(n == 1) {
-            printf("Enter the coach id to restrict: ");
+            printf(BHWHT "\nEnter the coach id to restrict: " COLOR_RESET);
             scanf("%d", &m);
             if(m<1 || m>countCoach) {
-                printf("Invalid Coach ID!\n\n");
+                printf(BHRED "Invalid Coach ID!\n\n" COLOR_RESET);
                 system("pause");
                 restrictOrActivateCoach();
                 return;
             }
             if(coach[m-1].coachStatus == 0) {
-                printf("The Bus is already restricted!\n\n");
+                printf(BHYEL "The Bus is already restricted!\n\n" COLOR_RESET);
                 system("pause");
                 restrictOrActivateCoach();
                 return;
@@ -2006,22 +2103,34 @@ void restrictOrActivateCoach() {
             coach[m-1].coachStatus = 0;
             UpdateStoredBusData();
             system("cls"); 
-            printf("== Restrict or Activate a Bus ==\n\n");
-            allBusList();
-            printf("\n\n" BHYEL "%s " BHRED "bus has been Restricted!\n", coach[m-1].busName);
+            printf("\n\n\n");
+            printf("                              ");
+            printf(WHTHB BHBLK"            Restrict or Activate a Bus            " COLOR_RESET);
+            printf("\n\n");
+            printf(BHWHT "      BusID\t   Bus name\t       Status\t");
+    printf("      BusID\t   Bus name\t       Status\n" COLOR_RESET);
+    for(int i=0; i<countCoach; i++) {
+        printf(BHWHT "      %-12d" COLOR_RESET " %-18s %-18s\t", coach[i].coachId, coach[i].busName, showCoachStatus(coach[i].coachStatus));
+        if((i+1)%2==0) {
+            printf("\n");
+        }
+    }
+    printf("\n\n");
+
+            printf("\n\n" BHYEL "%s " BHWHT "bus has been Restricted!\n", coach[m-1].busName);
             printf(BHWHT "User will not be able to buy any ticket from this bus!\n\n" COLOR_RESET);
 
         } else if(n == 2) {
-            printf("Enter the Coach id to reactivate: ");
+            printf(BHWHT "Enter the Coach id to reactivate: " COLOR_RESET);
             scanf("%d", &p);
             if(p<1 || p>countCoach) {
-                printf("Invalid CoachId!\n\n");
+                printf(BHRED "Invalid CoachId!\n\n" COLOR_RESET);
                 system("pause");
                 restrictOrActivateCoach();
                 return;
             }
             if(coach[p-1].coachStatus == 1) {
-                printf("The bus is already activated!\n\n");
+                printf(BHYEL "The bus is already activated!\n\n" COLOR_RESET);
                 system("pause");
                 restrictOrActivateCoach();
                 return;
@@ -2029,9 +2138,20 @@ void restrictOrActivateCoach() {
             coach[p-1].coachStatus = 1;
             UpdateStoredBusData();
             system("cls"); 
-            printf("== Restrict or Activate a Bus ==\n\n");
-            allBusList();
-            printf("\n\n" BHYEL "%s " BHRED "bus has been Activated!\n", coach[p-1].busName);
+            printf("\n\n\n");
+            printf("                              ");
+    printf(WHTHB BHBLK"            Restrict or Activate a Bus            " COLOR_RESET);
+    printf("\n\n");
+            printf(BHWHT "      BusID\t   Bus name\t       Status\t");
+    printf("      BusID\t   Bus name\t       Status\n" COLOR_RESET);
+    for(int i=0; i<countCoach; i++) {
+        printf(BHWHT "      %-12d" COLOR_RESET " %-18s %-18s\t", coach[i].coachId, coach[i].busName, showCoachStatus(coach[i].coachStatus));
+        if((i+1)%2==0) {
+            printf("\n");
+        }
+    }
+    printf("\n\n");
+            printf("\n\n" BHYEL "%s " BHWHT "bus has been Activated!\n", coach[p-1].busName);
             printf(BHWHT "Users will be able to buy any seat from this bus now!\n\n" COLOR_RESET);
 
         } else if (n == 3) {
@@ -2135,7 +2255,97 @@ const char* showSeatStatus(int iseatStatus) {
 }
 
 void ourBranches() {
+    system("cls");
+    int n;
+    do {
+        printf("== Our Branches ==\n\n");
+        printf("1. Dhaka\n");
+        printf("2. Sylhet\n");
+        printf("3. Chattogram\n");
+        printf("4. Rajshahi\n");
+        printf("5. Narail\n");
+        printf(BHRED "[0] Exit\n" COLOR_RESET);
 
+        printf("\nChoose an option: ");
+        scanf("%d", &n);
+
+        switch(n) {
+            case 1: 
+                system("cls");
+                printf("== Dhaka ==\n\n");
+                printf("Gabtoli\n");
+                printf("Address: Inter District Bus Terminal, Gabtoli, Mirpur\n");
+                printf("Call: 017**\n\n");
+
+                printf("Abdullahpur\n");
+                printf("Address: Address : 7/D,H#20, Sec# 9 ,Uttara\n");
+                printf("Call: 018**\n\n");
+
+                printf("kalyanpur\n");
+                printf("Address: 3/1-KA, South Kallyanpur\n");
+                printf("Call: 019**\n\n");
+                break;
+            case 2: 
+                system("cls");
+                printf("== Sylhet ==\n\n");
+                printf("Rajib Chattor\n");
+                printf("Address:3/4 Rio Complex, Rajib Chattor\n");
+                printf("Call: 015**\n\n");
+
+                printf("Oishi Zaman City Road\n");
+                printf("Address:3/4 OR Complex, Oishi Zaman City Road\n");
+                printf("Call: 015**\n\n");
+                break;
+            case 3: 
+                system("cls");
+                printf("== Chattogram ==\n\n");
+                printf("Dampara CMP\n");
+                printf("Address:167/1 Eden Complex, Dampara CMP\n");
+                printf("Call: 014**\n\n");
+
+                printf("Ashish Road\n");
+                printf("Address:17/1 Mustari Complex, shawapara CMP\n");
+                printf("Call: 014**\n");
+
+                printf("== Rajshahi ==\n\n");
+                printf("Raigate\n");
+                printf("Address:191/2 C&B road\n");
+                printf("Call: 019**\n\n");
+
+                printf("Terminal Point\n");
+                printf("Address:12/1 Mohila College Road Complex\n");
+                printf("Call: 019**\n");
+                break;
+            case 4: 
+                system("cls");
+                printf("== Rajshahi ==\n\n");
+                printf("Boalia\n");
+                printf("Address: Zero Point, Shaheb Bazar\n");
+                printf("Call: 017**\n\n");
+                
+                printf("Rajpara\n");
+                printf("Address: Thanar Mor, Chandipur\n");
+                printf("Call: 017**\n");
+                break;
+            case 5: 
+                system("cls");
+                printf("== Narail ==\n\n");
+                printf("Jessore Road\n");
+                printf("Address:9/11 C&B Road\n");
+                printf("Call: 017**\n\n");
+
+                printf("Muchir Pole\n");
+                printf("Address:12/1 NGVC Road, Muchir Pole\n");
+                printf("Call: 019**\n");
+                break;
+            case 0: 
+                returnToMenu();
+                break;
+            default: 
+                printf("Wrong choice!\n\n");
+                break;
+        } 
+    }while (true);
 }
 
 void contactUs() {
@@ -2601,8 +2811,6 @@ void allBusList() {
     }
     printf("\n\n");
 }
-
-
 
 void maintenanceMode() {
     system("cls");
