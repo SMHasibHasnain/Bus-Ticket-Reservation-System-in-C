@@ -659,14 +659,15 @@ void createAccount() {
 
 void updateOwnProfile() {
     system("cls");
-    printf("\n== My Profile ==\n");
-    printf("1. Full Name: %s\n", id[$myUserId-1].fullName);
-    printf("2. Username: %s\n", id[$myUserId-1].userName);
-    printf("3. Password: %s\n", id[$myUserId-1].userPass);
-    printf("4. Gender: %s\n", showGender(id[$myUserId-1].userGender));
-    printf("5. Age: %d\n", id[$myUserId-1].userAge);
-    printf("Role: %s\n", showRole(id[$myUserId-1].userRole));
-    printf("User ID: %d\n\n", id[$myUserId-1].userId);
+    printf(WHTHB BHBLK "                Update Own Profile            \n" COLOR_RESET);
+    printf(HBLK        " [You can update your account whenever you want]\n\n");
+    printf(BHYEL "      [1] "CYN"  Full Name  :"WHT"   %s\n", id[$myUserId-1].fullName);
+    printf(BHYEL "      [2] "CYN"  Username   :"WHT"   %s\n", id[$myUserId-1].userName);
+    printf(BHYEL "      [3] "CYN"  Password   :"WHT"   %s\n", id[$myUserId-1].userPass);
+    printf(BHYEL "      [4] "CYN"  Gender     :"WHT"   %s\n", showGender(id[$myUserId-1].userGender));
+    printf(BHYEL "      [5] "CYN"  Age        :"WHT"   %d\n", id[$myUserId-1].userAge);
+    printf(BHCYN "            Role       :"BHWHT"   "BLKB"%s"reset"\n", showRole(id[$myUserId-1].userRole));
+    printf(BHCYN "            User ID    :"BHWHT"   %d\n\n", id[$myUserId-1].userId);
 
     int n;
     int m;
@@ -675,50 +676,63 @@ void updateOwnProfile() {
     bool p;
     int q;
 
-    printf("Want to change profile? (yes = 1, no = 0): ");
+    printf(BHWHT "\n\nWant to change profile?\n" BHRED "  (yes = 1, no = 0)   : " reset);
     scanf("%d", &n);
+    printf("\n\n");
     if(n==1) {
         do {
-            printf("Choose what you want to change (Enter 0 for exit): ");
+            printf(BHWHT "Choose what you want to change\n" BHRED "  (Enter 0 for exit): " reset);
             scanf("%d", &m);
+            printf("\n\n");
             switch(m) {
                 case 1:
-                    printf("Enter new fullname: ");
+                    printf(BHYEL "Enter new fullname: " reset);
                     scanf("%c", &temp);
                     scanf("%[^\n]", currName);
                     strcpy(id[$myUserId-1].fullName, currName);
+                    printf(BHGRN "Your fullname has been changed!\n\n" reset);
+                    UpdateStoredUserData();
                     break;
                 case 2:
-                    printf("Enter new username: ");
+                    printf(BHYEL "Enter new username: " reset);
                     scanf("%c", &temp);
                     scanf("%[^\n]", currName);
                     strcpy(id[$myUserId-1].userName, currName);
+                    printf(BHGRN "Your username has been changed!\n\n" reset);
+                    UpdateStoredUserData();
                     break;
                 case 3:
-                    printf("Enter new password: ");
+                    printf(BHYEL "Enter new password: " reset);
                     scanf("%c", &temp);
                     scanf("%[^\n]", currName);
                     strcpy(id[$myUserId-1].userPass, currName);
+                    printf(BHGRN "Your password has been changed!\n\n" reset);
+                    UpdateStoredUserData();
                     break;
                 case 4:
-                    printf("Enter your correct gender: ");
+                    printf(BHYEL "Enter your correct gender: " reset);
                     scanf("%d", &p);
                     id[$myUserId-1].userGender = p;
+                    printf(BHGRN "Your gender has been changed!\n\n" reset);
+                    UpdateStoredUserData();
                     break;
                 case 5:
-                    printf("Enter your new age: ");
+                    printf(BHYEL "Enter your new age: " reset);
                     scanf("%d", &q);
                     id[$myUserId-1].userAge = q;
+                    printf(BHGRN "Your age has been changed!\n\n" reset);
+                    UpdateStoredUserData();
                     break;
                 case 0:
-                    printf("Your profile has been updated.\n");
+                    printf(BHWHT "Good Job!\nProfile has been updated finally.\n" reset);
+                    system("pause");
                     break;
                 default:
-                    printf("Wrong number!");
+                    printf(BHRED "Wrong number!" reset);
+                    system("pause");
                     break;
             }
         } while(m != 0);
-        UpdateStoredUserData();
         updateOwnProfile();
     } else if(n == 0) {
         returnToMenu();
@@ -2383,7 +2397,9 @@ void ourBranches() {
     system("cls");
     int n;
     do {
-        printf("== Our Branches ==\n\n");
+        printf("\n\n\n          ");
+        printf(WHTB BHBLK "            Our Branches             " reset);
+        printf("\n\n\n");
         printf("1. Dhaka\n");
         printf("2. Sylhet\n");
         printf("3. Chattogram\n");
@@ -2478,9 +2494,13 @@ void AboutUs() {
     printf("\n\n\n          ");
     printf(WHTB BHBLK "            About Us             " reset);
     printf("\n\n\n");
-    printf(BHWHT "This website is designed By\n"reset);
+    printf(BHWHT "This website is designed By: \n\n"reset);
     printf(BHYEL "S. M. Hasib Hasnain\n" reset);
-    printf(BHRED "CEO, Durnibar IT\n\n\n\n" reset);
+    printf(BHRED "Team Lead, Team Durnibar\n\n" reset);
+    printf(BHBLU "Atikur Rahman Rajib\n" reset);
+    printf(BHRED "Software Engineer, Team Durnibar\n\n" reset);
+    printf(BHMAG "Sarowar Mahfuz Suman\n" reset);
+    printf(BHRED "Testing Engineer, Team Durnibar\n\n\n\n" reset);
     system("pause");
     returnToMenu();
 
