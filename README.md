@@ -4,6 +4,7 @@ Here, I assumed three stakeholders such as:
   - Customer
   - Executive
   - Admin
+
 Many features has been included into it. For Example:
   - Main Menu (For All Stakeholders)
   - Login (Same for All Stakeholders)
