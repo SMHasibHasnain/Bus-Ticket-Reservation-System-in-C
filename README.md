@@ -41,4 +41,4 @@ __Many features has been included into it. For Example:__
   - Colourfull & Minimal Design
 
 ___* Each & Every Data Will Be Stored Into File. I've maintain a great File Handling System In It.___
-But, you have to create some folders. To get instructions about this, visit "User Manual Page" after openning the .exe file. Everything has been writen there.
+But, you have to create some folders. To get instructions about this, visit "User Manual Page" after openning the .exe file. Everything has been writen there. If our provided .exe file doesn't run on your device, simply download .c file and compile it.
