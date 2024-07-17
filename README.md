@@ -36,5 +36,9 @@ __Many features has been included into it. For Example:__
   - Restrict Or Activate Users
   - View Customer's Massages
   - Enable Maintenance Mode
+  - Some More Additional Pages
+  - Very few animations (Played with Loops)
+  - Colourfull & Minimal Design
 
-___Each & Every Data Will Be Stored Into File. I've maintain a great File Handling System In It.___
+___* Each & Every Data Will Be Stored Into File. I've maintain a great File Handling System In It.___
+But, you have to create some folders. To get instructions about this, visit "User Manual Page" after openning the .exe file. Everything has been writen there.
