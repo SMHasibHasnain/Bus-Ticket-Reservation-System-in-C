@@ -1,4 +1,4 @@
-This is a Simple Bus Reservation System made by using C.
+#This is a Simple Bus Reservation System made by using C.
 
 Here, I assumed three stakeholders such as:
   - Customer
