@@ -1,44 +1,28 @@
-# Simple Bus Reservation System made by using C.
+# 🚍 Simple Bus Reservation System 🚍
 
-__Here, I assumed four stakeholders such as:__
-  - Non-Logged Customer
-  - Logged Customer
-  - Executive
-  - Admin
+My first-ever project—a Bus Reservation System crafted in C! This repository stands as a nostalgic milestone in my coding journey, packed with features and a touch of creativity.
 
-__Many features has been included into it. For Example:__
-  - Main Menu 
-  - Login 
-  - Logout 
-  - Registration 
-  - Forgotten Password 
-  - Three Different Menu's for Different Stakeholders.
-  - View Bus Schedule.
-  - Search Bus System (Select 'Departure From' 'Destination To' and System will show availalable buses on this route)
-  - Realistic Seat Plan Diagram
-  - Gender Wise Seat Plan (Anyone cannot buy a ticket beside his opposite gender)
-  - Anyone can buy ticket for himself or anyone else.
-  - After Selecting a seat, a "Pending" status will appear on the Seat Plan Diagram till completing payment. After payment, status will be changed.
-  - Auto Generated Invoice 
-  - Fake Payment Gateway
-  - My Booked Seat Page
-  - Cancel booked Seat
-  - Update Own Profile
-  - Send Massage to Admin
-  - Add New Bus & Route
-  - Update Bus & Route
-  - Activate & Inactivate Bus
-  - Show System Summary
-  - Cancel Any Seat
-  - Create New Profiles
-  - Update Other Profiles
-  - Set Role For Other Users
-  - Restrict Or Activate Users
-  - View Customer's Massages
-  - Enable Maintenance Mode
-  - Some More Additional Pages
-  - Very few animations (Played with Loops)
-  - Colourfull & Minimal Design
+## 🌟 Meet the Stakeholders:
 
-___* Each & Every Data Will Be Stored Into File. I've maintain a great File Handling System In It.___
-But, you have to create some folders. To get instructions about this, visit "User Manual Page" after openning the .exe file. Everything has been writen there. If our provided .exe file doesn't run on your device, simply download .c file and compile it.
+    - Non-Logged Customer | Logged Customer
+    - Executive | Admin
+
+## ✨ Core Features:
+
+    - Dynamic Menus tailored to each role.
+    - *Smart Search:* Enter From and To, and voilà—find available buses!
+    - *Interactive Seat Plan:* Gender-sensitive and real-time updates.
+    - *Booking Flow:* Pending status ➡️ Payment ➡️ Auto-generated invoice.
+    - *Powerful Admin Tools:* Manage buses, routes, users, and more.
+    - *File Handling:* Every detail saved with a robust file system.
+
+## 🎨 Why You’ll Love It:
+
+    - A fake payment gateway for realistic vibes.
+    - Animations that breathe life into the console.
+    - A colorful, minimal design to keep it engaging.
+
+# 📝 Setup Made Simple:
+Refer to the User Manual for easy folder setup. If the .exe doesn’t work on your device, compile the .c file and get started.
+
+Take a peek, explore the features, and relive my first step into programming! 🚀
